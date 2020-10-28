@@ -1,0 +1,21 @@
+<!-- /templates/status.html -->
+{% extends "base.html" %}
+{% block title %}{% endblock %}
+{% block body %}
+<div class="jumbotron">
+  <h1>Status: {{status}}</h1>
+  {% if status == "OK" %}
+  <p class="lead">Awesome! Things are looking great on our end.</p>
+  {% else %}
+  <p class="lead">Well dang. That wasn't supposed to happen.</p>
+  {% endif %}
+  <h3><br>Questions? Contact the administration team.</h3>
+</div>
+
+
+{% endblock %}
+
+
+{#    {% ... %} for code statements    #}
+{#    {{ ... }} for printing an expression to the template #}
+{#    # ... ## for line statements #}
