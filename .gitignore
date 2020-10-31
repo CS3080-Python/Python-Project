@@ -1,2 +1,4 @@
 *.bat
 *.bat.*
+sentiment_analysis/get_sentiment.py
+.idea/*

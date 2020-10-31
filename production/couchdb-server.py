@@ -3,6 +3,7 @@ from flask import Flask
 from flask import request
 from flask import render_template #optional, but useful
 from flask import jsonify
+import datetime
 
 # GLOBAL VALUES #
 SERVER_HOST_NAME = "localhost"
@@ -35,7 +36,7 @@ def about():
 
 @app.route("/status", methods=["GET"])
 def status():
-    return render_template('status.html', status='OK')
+    return render_template('status.html', status='OK', updatetime=datetime.datetime.now().strftime("%m/%d/%y %H:%M:%S"))
                                   
 # serving form web page
 @app.route("/form")
