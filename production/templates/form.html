@@ -1,9 +1,11 @@
 <!-- /templates/my-form.html-->
-
+{% extends "base.html" %}
+{% block title %}{% endblock %}
+{% block body %}
 <html>
 	<body>
 		<h1>Search Topic Query Selection</h1>
-		<form action="/form-handler" method="get">
+		<form action="/form-handler" method="POST">
 		<input type="text" name="topic" placeholder="Enter Search Topic Here">
 		<input type="submit" value="SUBMIT" class="btn">
 		</form>
@@ -31,8 +33,8 @@
    .btn {
       background: #db133a;
       border: none;
-      height: 2rem;
-      border-radius: 20px;
+      height: 4rem;
+      border-radius: 40px;
       width: 330px;
       display: block;
       color: #fff;
@@ -42,3 +44,4 @@
    }
 	</style>
 </html>
+{% endblock %}
