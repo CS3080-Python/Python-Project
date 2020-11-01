@@ -5,6 +5,10 @@ from flask import render_template #optional, but useful
 from flask import jsonify
 import datetime
 
+import sys  
+sys.path.append('C:\CS3080\Python-Project\sentiment_analysis')  
+from get_sentiment import SentimentAnalysis # get tweet/set analysis
+
 # GLOBAL VALUES #
 SERVER_HOST_NAME = "localhost"
 SERVER_PORT = 3000
@@ -39,9 +43,9 @@ def status():
     return render_template('status.html', status='OK', updatetime=datetime.datetime.now().strftime("%m/%d/%y %H:%M:%S"))
                                   
 # serving form web page
-@app.route("/form")
+@app.route("/search")
 def form():
-    return render_template('form.html')
+    return render_template('search.html')
 
 # handling form data
 @app.route('/form-handler', methods=['POST'])
@@ -52,7 +56,7 @@ def handle_data():
     # we can also request.values
     #print('Hashtag to Search (request.values): ', request.values['hashtag'])
     #return "Request received successfully!"
-    
+    SentimentAnalysis()
     return jsonify(request.form)
 
 # GET - Retrieve data for the specified design document and view (pass "all" to view_name to see all documents)

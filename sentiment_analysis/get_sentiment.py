@@ -135,7 +135,7 @@ class TwitterClient(object):
             # print error (if any)
             print("Error : " + str(e))
 
-def main(): 
+def SentimentAnalysis(): 
     # creating object of TwitterClient Class
     api = TwitterClient() 
     
@@ -147,12 +147,14 @@ def main():
         
     # calling function to get tweets 
     tweets = api.get_tweets(query, count=500)
-
+    
+    '''
     for tweet in tweets:
         print('Sentiment:', tweet.sentiment, 'User:', tweet.user)
         print('Text:', tweet.text)
         print('Tags:', tweet.hashtag_list,'\n')
-
+    '''
+    
     '''
     Extra Functions to Test API Operation
     '''
@@ -170,7 +172,8 @@ def main():
 
     # percentage of neutral tweets 
     print("Neutral tweets percentage: {0:.2f}%".format(100*(len(tweets) -(len( ntweets )+len( ptweets)))/len(tweets))) 
-
+    
+    '''
     # printing first 5 positive tweets 
     print("\n\nPositive tweets:") 
     for tweet in ptweets[:10]: 
@@ -180,7 +183,9 @@ def main():
     print("\n\nNegative tweets:") 
     for tweet in ntweets[:10]: 
         print(tweet.text)
-
+    '''
+    
+    
 if __name__ == "__main__": 
     # calling main function
-    main()
+    SentimentAnalysis()
