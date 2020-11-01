@@ -10,6 +10,11 @@ import tweepy
 from textblob import TextBlob
 from tweepy import OAuthHandler
 
+# Import POST 
+import sys  
+sys.path.append('C:\CS3080\Python-Project\dataflow')  
+from post_data import post_tweet
+
 class Tweet_DB(object):
     '''
     Return objects from get_tweets for storage into local database. Ensure that this class
@@ -19,6 +24,7 @@ class Tweet_DB(object):
         self.topic = ''             # search topic to tweet
         self.text = ''              # tweet text content
         self.sentiment = ''         # pos/neut/neg sentiment
+        self.sent_score = ''
         self.user = tweepy.User     # contains poster data - reassigned to username
         self.hashtag_list = []      # list of associated hashtags, if applicable
 
@@ -79,14 +85,23 @@ class TwitterClient(object):
         '''
         # Use Textblob to Conduct Sentiment Analysis
         analysis = TextBlob(self.clean_tweet(tweet))
-
+        
+        # Store SA Data
+        sa_list = []
+        
         # Get SA of Tweet
         if analysis.sentiment.polarity > 0:
-            return 'positive'
+            sa_list.append('positive')
+            sa_list.append(str(analysis.sentiment.polarity))
+            return sa_list
         elif analysis.sentiment.polarity == 0:
-            return 'neutral'
+            sa_list.append('neutral')
+            sa_list.append(str(analysis.sentiment.polarity))
+            return sa_list
         else:
-            return 'negative'
+            sa_list.append('negative')
+            sa_list.append(str(analysis.sentiment.polarity))
+            return sa_list
 
     def get_tweets(self, query, count=10):
         '''
@@ -106,20 +121,26 @@ class TwitterClient(object):
                 parsed_tweet = Tweet_DB()
                 parsed_tweet.topic = query
                 parsed_tweet.text = tweet.text
-                parsed_tweet.sentiment = self.get_tweet_sentiment(tweet.text)
+                
+                # Get Sentiment and Score
+                sentiment_list = self.get_tweet_sentiment(tweet.text)
+                parsed_tweet.sentiment = sentiment_list[0]
+                parsed_tweet.sent_score = sentiment_list[1]
 
                 # Extracting Username from Tweet
                 if tweet.user._json['name']:  # if any name present...
                     parsed_tweet.user = tweet.user._json['name']
                 else:
                     parsed_tweet.user = 'Unknown'
-
+                
+                
                 # Extracting Hashtags from Tweet
                 if tweet.entities['hashtags']:  # if any values...
                     # print(tweet.hashtag_set['hashtags'])  # print full list
                     for tags in tweet.entities['hashtags']:  # print tags
                         parsed_tweet.hashtag_list.append(tags['text']) # add extracted tags to list
-
+                    
+                            
                 # Add Parsed Tweet to Tweet List
                 if tweet.retweet_count > 0:
                     # if tweet has retweets, ensure that it is appended only once
@@ -135,29 +156,32 @@ class TwitterClient(object):
             # print error (if any)
             print("Error : " + str(e))
 
-def SentimentAnalysis(): 
+def SentimentAnalysis(query): 
     # creating object of TwitterClient Class
     api = TwitterClient() 
     
+    '''
     # get query from CLI
     if len(sys.argv) >= 2:
         query = sys.argv[1]
     else:
         query = 'python'
-        
-    # calling function to get tweets 
-    tweets = api.get_tweets(query, count=500)
+    '''
     
-    '''
+    # calling function to get tweets 
+    tweets = api.get_tweets(query, count=5)
+       
+    # POST to Database
     for tweet in tweets:
-        print('Sentiment:', tweet.sentiment, 'User:', tweet.user)
-        print('Text:', tweet.text)
-        print('Tags:', tweet.hashtag_list,'\n')
-    '''
+        post_tweet(tweet)
+
+
+        
     
     '''
     Extra Functions to Test API Operation
     '''
+    
     # picking positive tweets from tweets
     ptweets = [tweet for tweet in tweets if tweet.sentiment == 'positive'] # add positive tweets
 

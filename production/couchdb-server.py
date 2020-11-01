@@ -18,8 +18,8 @@ ADMIN_PW = "**CS-3080**"
 DB_ADDRESS = "http://" + ADMIN_UN + ":" + ADMIN_PW + "@" + SERVER_HOST_NAME + ":5984/"
 DB_NAME = "py-project-db"
 
-VIEWS_LIST = ["hashtags", "users", "sa_types"]               # List of views in the database
-REQUIRED_PARAMS = ["hashtag", "user", "sa_type", "sa_score"] # Key values that must be present in POST requests to the server
+VIEWS_LIST = ["topics", "users", "sa_types", "sa_scores", "texts", "hashtags"]               # List of views in the database
+REQUIRED_PARAMS = ["topic", "user", "sa_type", "sa_score", "text", "hashtag_list"] # Key values that must be present in POST requests to the server
 
 # SETUP COUCHDB #
 # Get a reference to our CouchDB server + database
@@ -56,7 +56,7 @@ def handle_data():
     # we can also request.values
     #print('Hashtag to Search (request.values): ', request.values['hashtag'])
     #return "Request received successfully!"
-    SentimentAnalysis()
+    SentimentAnalysis(request.values['topic'])
     return jsonify(request.form)
 
 # GET - Retrieve data for the specified design document and view (pass "all" to view_name to see all documents)
@@ -76,12 +76,14 @@ def receivedTwitterData():
             return {"res": "POST request data MUST contain a \'" + param + "\' key!"}, 400
 
     # Check whether a view already exists for each of the parameters, and if not, create a new one
+    '''
     for i, view in enumerate(VIEWS_LIST):
         try:
+            print('View', view)
             db.view(name=view + "/" + request.json[REQUIRED_PARAMS[i]]).rows
         except:
             createNewView(view, request.json[REQUIRED_PARAMS[i]], REQUIRED_PARAMS[i]) 
-    
+    '''
     # Add document containing the Twitter data to database
     createDoc(request.json)
 
@@ -107,10 +109,12 @@ def createNewView(ddoc_id, view_name, field_name):
 def createDoc(json_data):
     doc_data = {
         "article_data": { 
-            "hashtag": json_data["hashtag"], 
+            "topic": json_data["topic"], 
             "user": json_data["user"], 
             "sa_score": json_data["sa_score"],
-            "sa_type": json_data["sa_type"]
+            "sa_type": json_data["sa_type"],
+            "text": json_data['text'],
+            "hashtag": json_data['hashtag_list']
         }
     }
     doc_id, doc_rev = db.save(doc_data)

@@ -1,15 +1,25 @@
 import requests
 import json
 
-url='http://localhost:3000/data'
-post_data = {"hashtag": "Trump", "user":"Jane Doedoe", "sa_type": "positive", "sa_score": "10"}
+def post_tweet(tweet):
+    url='http://localhost:3000/data'
+    
+    input_data = {}
+    
+    input_data['topic'] = tweet.topic
+    input_data['user'] = tweet.user
+    input_data['sa_type'] = tweet.sentiment
+    input_data['sa_score'] = tweet.sent_score   
+    input_data['text'] = tweet.text
+    input_data['hashtag_list'] = tweet.hashtag_list
 
-res = requests.post(url, json=post_data)
-	
 
-if res.status_code != 200:
-  print("Error:", res.status_code)
+    res = requests.post(url, json=input_data)
+        
 
-data = res.json()
+    if res.status_code != 200:
+      print("Error:", res.status_code)
 
-print(data)
+    data = res.json()
+
+    print(data)
