@@ -1,15 +1,21 @@
 import requests
 import json
 
-url='http://localhost:3000/design/users/all'
-get_data = {}
+# Define functions for each view type
+def get_topic_data(topic):
+  url = 'http://localhost:3000/design/topics/' + topic
+  get_data(url)
 
-res = requests.get(url, params={"hashtag": "Trump"})
-	
+def get_saType_data(sa_type):
+  url='http://localhost:3000/design/sa_types/' + sa_type
+  get_data(url)
 
-if res.status_code != 200:
-  print("Error:", res.status_code)
+# General function to retrieve data from database given a valid URL
+def get_data(url):
+  res = requests.get(url)
+  
+  if res.status_code != 200:
+    print("Error:", res.status_code)
 
-data = res.json()
-
-print(data)
+  data = res.json()
+  return data

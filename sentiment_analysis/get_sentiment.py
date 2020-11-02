@@ -1,5 +1,6 @@
 # Regex Capabilities
 import re
+
 # Command-Line Arguments
 import sys
 
@@ -11,7 +12,6 @@ from textblob import TextBlob
 from tweepy import OAuthHandler
 
 # Import POST 
-import sys  
 sys.path.append('C:\CS3080\Python-Project\dataflow')  
 from post_data import post_tweet
 
@@ -58,7 +58,7 @@ class TwitterClient(object):
         '''
 
         # Enter Location of Keys Here
-        file_location = r'C:\CS3080\twitter_api\keys.txt'
+        file_location = r'C:\CS3080\Python-Project\keys.txt'
 
         auth_list = []
         with open (file_location, 'rt') as keyfile:
