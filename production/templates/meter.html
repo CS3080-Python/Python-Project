@@ -1,0 +1,111 @@
+<!-- meter.html-->
+{% extends "base.html" %}
+{% block title %}{% endblock %}
+{% block body %}
+<html>
+<head>
+	<script src="/static/rgraph/RGraph.common.core.js"></script>      <!-- Always needed -->
+	<script src="/static/rgraph/RGraph.common.dynamic.js"></script>   <!-- Just needed for dynamic features -->
+
+	<script src="/static/rgraph/RGraph.common.annotate.js"></script>  <!-- Just needed for the annotating functionality -->
+	<script src="/static/rgraph/RGraph.common.context.js"></script>   <!-- Just needed for context menus -->
+	<script src="/static/rgraph/RGraph.common.csv.js"></script>       <!-- Just needed for accessing CSV files -->
+	<script src="/static/rgraph/RGraph.common.effects.js"></script>   <!-- Just needed for visual effects -->
+	<script src="/static/rgraph/RGraph.common.key.js"></script>       <!-- Just needed for showing keys -->
+	<script src="/static/rgraph/RGraph.common.sheets.js"></script>    <!-- Just needed for accessing Google Sheets -->
+	<script src="/static/rgraph/RGraph.common.tooltips.js"></script>  <!-- Just needed for showing tooltips -->
+
+	<script src="/static/rgraph/RGraph.bar.js"></script>              <!-- Just needed for Bar charts -->
+	<script src="/static/rgraph/RGraph.bipolar.js"></script>          <!-- Just needed for Bi-polar charts -->
+	<script src="/static/rgraph/RGraph.fuel.js"></script>             <!-- Just needed for Fuel charts -->
+	<script src="/static/rgraph/RGraph.funnel.js"></script>           <!-- Just needed for Funnel charts -->
+	<script src="/static/rgraph/RGraph.gantt.js"></script>            <!-- Just needed for Gantt charts -->
+	<script src="/static/rgraph/RGraph.gauge.js"></script>            <!-- Just needed for Gauge charts -->
+	<script src="/static/rgraph/RGraph.hbar.js"></script>             <!-- Just needed for Horizontal Bar charts -->
+	<script src="/static/rgraph/RGraph.hprogress.js"></script>        <!-- Just needed for Horizontal Progress bars -->
+	<script src="/static/rgraph/RGraph.line.js"></script>             <!-- Just needed for Line charts -->
+	<script src="/static/rgraph/RGraph.meter.js"></script>            <!-- Just needed for Meter charts -->
+	<script src="/static/rgraph/RGraph.odo.js"></script>              <!-- Just needed for Odometers -->
+	<script src="/static/rgraph/RGraph.pie.js"></script>              <!-- Just needed for Pie AND Donut charts -->
+	<script src="/static/rgraph/RGraph.radar.js"></script>            <!-- Just needed for Radar charts -->
+	<script src="/static/rgraph/RGraph.rose.js"></script>             <!-- Just needed for Rose charts -->
+	<script src="/static/rgraph/RGraph.rscatter.js"></script>         <!-- Just needed for RScatter charts -->
+	<script src="/static/rgraph/RGraph.scatter.js"></script>          <!-- Just needed for Scatter charts -->
+	<script src="/static/rgraph/RGraph.semicircularprogress.js"></script> <!-- Just needed for Semi-circular Progress charts -->
+	<script src="/static/rgraph/RGraph.thermometer.js"></script>      <!-- Just needed for Thermometer charts -->
+	<script src="/static/rgraph/RGraph.vprogress.js"></script>        <!-- Just needed for Vertical Progress bars -->
+	<script src="/static/rgraph/RGraph.waterfall.js"></script>        <!-- Just needed for Waterfall charts  -->
+	
+	
+
+	<p class="lead">
+		<h3><br>
+		Below you will find the Sentiment Analysis results for your search term.
+		<br></h3>
+	</p>
+	<p><br>
+		<h3>Topic: {{topic}} </h3>
+		<h3>Sentiment: {{sa_type}} </h3>
+	</p>
+	<h3>
+		<p>Sentiment Score:</p>
+		<p id="score">{{sa_score}}</p>
+	</h3>
+	
+	<canvas id="cvs" width="600" height="300">[No canvas support]</canvas>
+	
+	<body>
+		<script>
+			var score = document.getElementById("score").innerHTML;
+			
+			new RGraph.Meter({
+				id: 'cvs',
+				min: -10,
+				max: 10,
+				value: score,
+				options: {
+					colorsRanges: [
+						[-10,-2, 'Gradient(white:red)'],
+						[-2,2, 'Gradient(white:yellow)'],
+						[2, 10, 'Gradient(white:green)']
+					]
+				}
+			}).draw();
+		</script>
+	</body>
+	<style>
+	   body {
+		  color: #000;
+		  height: 100vh;
+		  background: linear-gradient(62deg, #E19445 0%, #DF6242 100%) no-repeat;
+		  text-align: center;
+	   }
+	   input {
+		  width: 315px;
+		  display: block;
+		  margin: 1rem auto;
+		  border: 2px solid #fff;
+		  padding: 8px;
+		  background: transparent;
+		  border-radius: 20px;
+		  outline: none;
+	   }
+	   ::placeholder {
+		  color: #000;
+	   }
+	   .btn {
+		  background: #db133a;
+		  border: none;
+		  height: 4rem;
+		  border-radius: 40px;
+		  width: 330px;
+		  display: block;
+		  color: #fff;
+		  outline: none;
+		  cursor: pointer;
+		  margin: 1rem auto;
+	   }
+	</style>
+</head>
+</html>
+{% endblock %}

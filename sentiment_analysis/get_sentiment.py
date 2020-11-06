@@ -15,6 +15,17 @@ from tweepy import OAuthHandler
 sys.path.append('C:\CS3080\Python-Project\dataflow')  
 from post_data import post_tweet
 
+
+class Object_DB(object):
+    '''
+    This is the final object type that is passed into the database, and is modified depending on what we decide to display to the user.
+    '''
+    def __init__(self):
+        self.topic = ''
+        self.sa_type = ''
+        self.sa_score = 0
+
+
 class Tweet_DB(object):
     '''
     Return objects from get_tweets for storage into local database. Ensure that this class
@@ -92,15 +103,15 @@ class TwitterClient(object):
         # Get SA of Tweet
         if analysis.sentiment.polarity > 0:
             sa_list.append('positive')
-            sa_list.append(str(analysis.sentiment.polarity))
+            sa_list.append(analysis.sentiment.polarity * (1 - analysis.sentiment.subjectivity))
             return sa_list
         elif analysis.sentiment.polarity == 0:
             sa_list.append('neutral')
-            sa_list.append(str(analysis.sentiment.polarity))
+            sa_list.append(analysis.sentiment.polarity * (1 - analysis.sentiment.subjectivity))
             return sa_list
         else:
             sa_list.append('negative')
-            sa_list.append(str(analysis.sentiment.polarity))
+            sa_list.append(analysis.sentiment.polarity * (1 - analysis.sentiment.subjectivity))
             return sa_list
 
     def get_tweets(self, query, count=10):
@@ -160,26 +171,34 @@ def SentimentAnalysis(query):
     # creating object of TwitterClient Class
     api = TwitterClient() 
     
-    '''
-    # get query from CLI
-    if len(sys.argv) >= 2:
-        query = sys.argv[1]
-    else:
-        query = 'python'
-    '''
+    # create DB Object for storage
+    db_obj = Object_DB()
+    db_obj.topic = query # assign topic
     
     # calling function to get tweets 
-    tweets = api.get_tweets(query, count=5)
-       
-    # POST to Database
-    for tweet in tweets:
-        post_tweet(tweet)
-
-
-        
+    tweets = api.get_tweets(query, count=100)
     
+    # Calculate Cumulative Sentiment
+    overall_polarity = 0
+    for tweet in tweets:
+        overall_polarity += tweet.sent_score
+    
+    # assign polarity to database object
+    db_obj.sa_score = overall_polarity
+    
+    # calculate sentiment type of database object
+    if overall_polarity > 0:
+        db_obj.sa_type = 'positive'
+    elif overall_polarity < 0:
+        db_obj.sa_type = 'negative'
+    else:
+        db_obj.sa_type = 'neutral'
+    
+    # Send to Database
+    post_tweet(db_obj)
+
     '''
-    Extra Functions to Test API Operation
+    Extra Functions to Test API Operation (Optional)
     '''
     
     # picking positive tweets from tweets
@@ -190,26 +209,18 @@ def SentimentAnalysis(query):
 
     # percentage of positive tweets
     print("Positive tweets percentage: {0:.2f}%".format(100 * len(ptweets) / len(tweets)))
+    print("Positive tweets number:", len(ptweets))
 
     # percentage of negative tweets 
     print("Negative tweets percentage: {0:.2f}%".format(100*len(ntweets)/len(tweets))) 
-
+    print("Negative tweets number:", len(ntweets))
+    
     # percentage of neutral tweets 
     print("Neutral tweets percentage: {0:.2f}%".format(100*(len(tweets) -(len( ntweets )+len( ptweets)))/len(tweets))) 
+    print("Neutral tweets number:",len(tweets) - (len(ptweets) + len(ntweets)))
     
-    '''
-    # printing first 5 positive tweets 
-    print("\n\nPositive tweets:") 
-    for tweet in ptweets[:10]: 
-        print(tweet.text)
-
-    # printing first 5 negative tweets 
-    print("\n\nNegative tweets:") 
-    for tweet in ntweets[:10]: 
-        print(tweet.text)
-    '''
-    
+    return db_obj
     
 if __name__ == "__main__": 
     # calling main function
-    SentimentAnalysis()
+    db_obj = SentimentAnalysis()

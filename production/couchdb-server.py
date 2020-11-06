@@ -45,17 +45,25 @@ def status():
     return render_template('status.html', status='OK', updatetime=datetime.datetime.now().strftime("%m/%d/%y %H:%M:%S"))
 
 # Serve Search form web page
-@app.route("/search")
+@app.route('/search')
 def form():
     return render_template('search.html')
 
-# Handle Search orm data
+# Handle Search Form data
 @app.route('/form-handler', methods=['POST'])
 def handle_data():
     
     # Run sentiment analysis on the topic provided in the Search form
-    SentimentAnalysis(request.values['topic'])
-    return jsonify(request.form)
+    db_obj = SentimentAnalysis(request.values['topic'])
+    return render_template('meter.html', topic=db_obj.topic, sa_type=db_obj.sa_type, sa_score=db_obj.sa_score)
+    
+    #return jsonify(request.form)
+
+#@app.route('/meter')
+#def meter():
+#    return render_template('meter.html', topic='Trump', sa_type='positive', # sa_score='34.7')
+
+
 
 
 # DATABASE INTERACTION #
