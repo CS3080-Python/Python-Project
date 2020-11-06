@@ -185,6 +185,8 @@ def SentimentAnalysis(query):
     
     # assign polarity to database object
     db_obj.sa_score = overall_polarity
+    # set to 2 decimal places
+    db_obj.sa_score = round(db_obj.sa_score, 2);
     
     # calculate sentiment type of database object
     if overall_polarity > 0:

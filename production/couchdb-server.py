@@ -59,12 +59,6 @@ def handle_data():
     
     #return jsonify(request.form)
 
-#@app.route('/meter')
-#def meter():
-#    return render_template('meter.html', topic='Trump', sa_type='positive', # sa_score='34.7')
-
-
-
 
 # DATABASE INTERACTION #
 
