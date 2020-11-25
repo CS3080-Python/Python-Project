@@ -11,8 +11,18 @@
     <p>
     Users will be able to query topics in real-time utilizing the Twitter API to retrieve tweets based on chosen topics. Search terms entered into the system will retrieve the most-recent 100 Tweets relating to this topic, and conduct Sentiment Analysis upon the text contained within the Tweets.
     <br>
-    
-	Any topic can be searched for a sentiment analysis to be ran. 
+    <br>
+	This program will scrape posts from Twitter and categorize these posts based on the content via
+	Natural Language Processing. It will also determine an aggregate "reaction score" based on the comments
+	of the post. The data of this program is retrieved via a data scraping API and is stored in a backend database.
+	The categorization and scoring is conducted through various data analytics methodologies and is then presented
+	to a web server which will provide the user access to the program output. 
+	<br>
+	<br>
+	The sentiment analysis score is prorated to be on a scale that is much lower than the actual precentages. The 
+	sentiment meter will work off of a subjectivity score. A tweet is to be considered positive if the analysis yields
+	a score greater than one. A neutral score will any score that is between negative one and postive one. Anything less
+	than negative one, will give the tweet an overall negative score. 
     </p>
 
 	
