@@ -167,6 +167,7 @@ class TwitterClient(object):
             # print error (if any)
             print("Error : " + str(e))
 
+
 def SentimentAnalysis(query): 
     # creating object of TwitterClient Class
     api = TwitterClient() 
@@ -185,6 +186,7 @@ def SentimentAnalysis(query):
     
     # assign polarity to database object
     db_obj.sa_score = overall_polarity
+
     # set to 2 decimal places
     db_obj.sa_score = round(db_obj.sa_score, 2);
     
@@ -220,5 +222,4 @@ def SentimentAnalysis(query):
     return db_obj
     
 if __name__ == "__main__": 
-    # calling main function
     db_obj = SentimentAnalysis()

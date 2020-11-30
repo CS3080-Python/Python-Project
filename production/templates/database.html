@@ -4,17 +4,14 @@
 {% block body %}
 <html>
 	<body>
-		<h1>Search Topic Query Selection</h1>
+		<h1>Database Query</h1>
 		<p class="lead">
 		<br>
-		Enter in a search term to conduct sentiment analysis upon. Once searched, you will then be able to navigate to the database to view the results.
+		Enter in a topic to query the database for a document. The database contains data on previously searched topics.
 		<br>
 		</p>
-		<p class="lead">
-		Note: Queries to Twitter may take some time, depending on the query size. If you find the system hanging for an extended amount of time, navigate to a new web page to terminate the query.
-		<br>
-		<form action="/search-form-handler" method="POST">
-		<input type="text" name="topic" placeholder="Enter Search Topic Here">
+		<form action="/db-form-handler" method="POST">
+		<input type="text" name="topic" placeholder="Enter Topic To Query Here">
 		<input type="submit" value="SUBMIT" class="btn">
 		</form>
 	</body>
@@ -22,7 +19,7 @@
 	   body {
 		  color: #000;
 		  height: 100vh;
-		  background: linear-gradient(62deg, #DF6242 0%, #E19445 100%) no-repeat;
+		  background: linear-gradient(62deg, #E19445 0%, #DF6242 100%) no-repeat;
 		  text-align: center;
 	   }
 	   input {

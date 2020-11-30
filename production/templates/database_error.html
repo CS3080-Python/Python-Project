@@ -1,0 +1,14 @@
+<!-- database_error.html-->
+
+{% extends "base.html" %}
+{% block title %}About{% endblock %}
+{% block body %}
+<div class="jumbotron">
+  <h1>Error: Topic Not Found</h1>
+
+  <p class="overview">
+  The topic "{{topic}}" could not be found in the database. Try searching for it first instead.
+  </p>
+
+</div>
+{% endblock %}

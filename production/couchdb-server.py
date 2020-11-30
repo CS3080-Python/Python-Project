@@ -44,20 +44,34 @@ def about():
 def status():
     return render_template('status.html', status='OK', updatetime=datetime.datetime.now().strftime("%m/%d/%y %H:%M:%S"))
 
-# Serve Search form web page
 @app.route('/search')
-def form():
+def searchForm():
     return render_template('search.html')
 
+@app.route('/database')
+def dbForm():
+    return render_template('database.html')
+
+
 # Handle Search Form data
-@app.route('/form-handler', methods=['POST'])
-def handle_data():
+@app.route('/search-form-handler', methods=['POST'])
+def handleSearchData():
     
     # Run sentiment analysis on the topic provided in the Search form
     db_obj = SentimentAnalysis(request.values['topic'])
-    return render_template('meter.html', topic=db_obj.topic, sa_type=db_obj.sa_type, sa_score=db_obj.sa_score)
+    return render_template('meter.html', topic=db_obj.topic, sa_type=db_obj.sa_type, sa_score=db_obj.sa_score, source="Sentiment Analysis")
+
+
+# Handle Database Query Form data
+@app.route('/db-form-handler', methods=['POST'])
+def handleDBQuery():
     
-    #return jsonify(request.form)
+    # Check to see if there is a document for the requested topic currently in the database, take user to an error page if not
+    try:
+        doc_data = get_topic_data(request.values['topic'])['1']
+        return render_template('meter.html', topic=doc_data['topic'], sa_type=doc_data['sa_type'], sa_score=doc_data['sa_score'], source="database")
+    except:
+        return render_template('database_error.html', topic=request.values['topic'])
 
 
 # DATABASE INTERACTION #
@@ -81,8 +95,7 @@ def getDesignDoc(ddoc_name, view_name):
 
     # View is not valid
     except:
-        return {"res": "The specified " + ddoc_name + " could not be found in the database."}, 200
-
+        return "The specified " + ddoc_name + " could not be found in the database.", 200
 
 
 # POST - Add a document to database using data received from Twitter API
@@ -92,26 +105,37 @@ def receivedTwitterData():
     # Make sure POST request body includes the required parameters
     for param in REQUIRED_PARAMS:
         if not param in request.json:
-            return {"res": "POST request data MUST contain a \'" + param + "\' key!"}, 400
+            return "POST request data MUST contain a \'" + param + "\' key!", 400
 
-    # Check whether a view already exists for each of the parameters, and if not, create a new one
+    # Check whether a view already exists for each of the parameters. If so, update the document. Otherwise, create a new one
     for i, view in enumerate(VIEWS_LIST):
         try:
-            print('View', view)
             db.view(name=view + "/" + request.json[REQUIRED_PARAMS[i]]).rows
         except:
             createNewView(view, request.json[REQUIRED_PARAMS[i]], REQUIRED_PARAMS[i]) 
 
-    # Add document containing the Twitter data to database
-    createDoc(request.json)
+    # Check whether document already exists under this view, and if so, update it
+    if len(db.view(name="topics" + "/" + request.json["topic"], include_docs=True).rows) > 0:
+        for item in db.view(name="topics" + "/" + request.json["topic"], include_docs=True):
+            for param in REQUIRED_PARAMS:
+                item.doc["article_data"][param] = request.json[param]
+                item.doc["article_data"][param] = request.json[param]
+           
+            doc_id, doc_rev = db.save(item.doc)
+            print("Updated document with ID " + doc_id + "@" + doc_rev + ".")
 
-    return {"res": "Received Twitter data and successfully added it to the database."}, 200
+    # If no existing document, create a new one
+    else:
+        createDoc(request.json)
+
+    # Add document containing the Twitter data to database
+    return "Received Twitter data and successfully added it to the database.", 200
 
 
 # Add a new view to the specified design document, so we can filter docs by the specified field name
 def createNewView(ddoc_id, view_name, field_name):
 
-    # @ params
+    # @params
     # ddoc_id: The name of the design document (i.e. the part after "_design/")
     # view_name: The name of the view to create
     # field_name: The name of the field to filter docuemnts by
@@ -120,23 +144,24 @@ def createNewView(ddoc_id, view_name, field_name):
     doc["views"][view_name] = {"map": "function (doc) { if (doc.article_data." + field_name + " == \"" + view_name + "\") { emit(doc._id, 1); } }"}
     db.save(doc)
 
-    return {"res": "Successfully created new view \'" + view_name + "\' in design document \'" + ddoc_id + "\'"}, 200
+    return "Successfully created new view \'" + view_name + "\' in design document \'" + ddoc_id + "\'", 200
 
 
 # Create a new document based on data received from Twitter API
 def createDoc(json_data):
-    doc_data = {
-        "article_data": { 
-            "topic": json_data["topic"], 
-            "sa_score": json_data["sa_score"],
-            "sa_type": json_data["sa_type"],
-        }
-    }
+
+    # Set initial document data
+    doc_data = { "article_data": { } }
+
+    # Add all required parameters to document
+    for param in REQUIRED_PARAMS:
+        doc_data["article_data"][param] = json_data[param]
+
     doc_id, doc_rev = db.save(doc_data)
 
-    return {"res": "Successfully created new document. ID: " + doc_id + ", REV: " + doc_rev}, 200
+    return "Successfully created new document. ID: " + doc_id + ", REV: " + doc_rev, 200
 
 
 # Start Flask server
 if __name__ == "__main__":
-    app.run(host=SERVER_HOST_NAME, port=SERVER_PORT, debug=False) # Set "debug" to True for console logs
+    app.run(host=SERVER_HOST_NAME, port=SERVER_PORT, debug=False)
