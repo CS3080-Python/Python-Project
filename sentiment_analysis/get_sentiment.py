@@ -197,13 +197,9 @@ def SentimentAnalysis(query):
         db_obj.sa_type = 'negative'
     else:
         db_obj.sa_type = 'neutral'
-    
+
     # Send to Database
     post_tweet(db_obj)
-
-    '''
-    Extra Functions to Test API Operation (Optional)
-    '''
     
     # picking positive tweets from tweets
     ptweets = [tweet for tweet in tweets if tweet.sentiment == 'positive'] # add positive tweets
@@ -212,16 +208,16 @@ def SentimentAnalysis(query):
     ntweets = [tweet for tweet in tweets if tweet.sentiment == 'negative'] # add negative tweets
 
     # percentage of positive tweets
-    print("Positive tweets percentage: {0:.2f}%".format(100 * len(ptweets) / len(tweets)))
-    print("Positive tweets number:", len(ptweets))
+    print("Positive tweets percentage: {0:.2f}%".format(100*len(ptweets)/len(tweets)))
+    print("Positive tweets sentiment number:", len(ptweets))
 
     # percentage of negative tweets 
     print("Negative tweets percentage: {0:.2f}%".format(100*len(ntweets)/len(tweets))) 
-    print("Negative tweets number:", len(ntweets))
+    print("Negative tweets sentiment number:", len(ntweets))
     
     # percentage of neutral tweets 
-    print("Neutral tweets percentage: {0:.2f}%".format(100*(len(tweets) -(len( ntweets )+len( ptweets)))/len(tweets))) 
-    print("Neutral tweets number:",len(tweets) - (len(ptweets) + len(ntweets)))
+    print("Neutral tweets percentage: {0:.2f}%".format(100*(len(tweets)-(len(ntweets)+len(ptweets)))/len(tweets))) 
+    print("Neutral tweets senetiment number:", len(tweets) - (len(ptweets) + len(ntweets)))
     
     return db_obj
     
